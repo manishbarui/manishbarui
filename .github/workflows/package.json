@@ -1,0 +1,10 @@
+{
+  "name": "my-static-site",
+  "version": "1.0.0",
+  "homepage": "https://manish-dev.github.io/my-static-site",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build && next export",
+    "start": "next start"
+  }
+}
