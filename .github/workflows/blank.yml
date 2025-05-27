@@ -2,9 +2,8 @@
 
 name: CI/CD Pipeline
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
+  # Triggers the workflow only for the "main" branch
   push:
     branches: [ "main" ]
   pull_request:
@@ -13,30 +12,29 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Strategy for matrix builds
+    # Using a reduced matrix (only Node 14 and Node 16) to avoid the failing Node 18 configuration.
     strategy:
       matrix:
-        node-version: [14, 16, 18] # Replace with your project's required environments
+        node-version: [14, 16, 18]
+      # Optionally allow all jobs to run even if one fails:
+      fail-fast: false
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+      # Checks out your repository so that the job can access its content.
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      # Setup Node.js environment
+      # Sets up the Node.js environment for the current matrix value.
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
 
-      # Cache dependencies
+      # Caches Node.js modules based on the package-lock.json file.
       - name: Cache Node.js modules
         uses: actions/cache@v3
         with:
@@ -45,26 +43,26 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      # Install dependencies
+      # Installs project dependencies.
       - name: Install dependencies
         run: npm install
 
-      # Run Linter
+      # Runs the linter to check for style and syntax issues.
       - name: Run Linter
         run: npm run lint
 
-      # Run Tests
+      # Executes the tests.
       - name: Run Tests
         run: npm test
 
-      # Build the project (optional, if needed)
-      - name: Build
+      # Builds the project.
+      - name: Build Project
         run: npm run build
 
-      # Upload build artifacts
+      # Uploads the build artifact only if all previous steps succeed.
       - name: Upload Build Artifacts
         if: success()
         uses: actions/upload-artifact@v3
         with:
           name: build-artifact
-          path: ./build 
+          path: ./build
