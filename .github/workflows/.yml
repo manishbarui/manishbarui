@@ -1,5 +1,5 @@
 name: Deploy Static Site to GitHub Pages
-name: Cl
+
 on:
   push:
     branches: ["main"]
@@ -20,6 +20,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.0.0
+
       - name: Copy Static Files
         run: |
           if [ ! -d "public" ]; then
@@ -28,6 +29,7 @@ jobs:
           fi
           mkdir -p _site
           cp -r ./public/* ./_site/  # Replace "public" with your actual output directory (e.g., dist, _site)
+
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3.0.1
         with:
