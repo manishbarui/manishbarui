@@ -1,0 +1,10 @@
+{
+  "name": "my-static-site",
+  "version": "1.0.0",
+  "homepage": "https://manishbarui.github.io/manishbarui",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build && next export",
+    "start": "next start"
+  }
+}
