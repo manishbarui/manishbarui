@@ -1,0 +1,45 @@
+name: Deploy Static Site to GitHub Pages
+name: Cl
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.0.0
+      - name: Copy Static Files
+        run: |
+          if [ ! -d "public" ]; then
+            echo "Error: Directory 'public' does not exist. Please update the path to your static site files."
+            exit 1
+          fi
+          mkdir -p _site
+          cp -r ./public/* ./_site/  # Replace "public" with your actual output directory (e.g., dist, _site)
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3.0.1
+        with:
+          path: ./_site
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4.0.5
