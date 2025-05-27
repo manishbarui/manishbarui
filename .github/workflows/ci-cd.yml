@@ -1,0 +1,58 @@
+# This is a mixed workflow combining Next.js build/deployment with basic script execution
+
+name: CI/CD Pipeline
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build-deploy"
+  build-deploy:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Set up Node.js environment
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'  # Match the Node.js version needed for the Next.js project
+
+      # Install project dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Build the Next.js static site
+      - name: Build static site with Next.js
+        run: npm run build  # Runs "next build && next export" as per your package.json
+
+      # Run a one-line script (from the second workflow)
+      - name: Run a one-line script
+        run: echo Hello, world!
+
+      # Run a multi-line script (from the second workflow)
+      - name: Run a multi-line script
+        run: |
+          echo Add other actions to build,
+          echo test, and deploy your project.
+
+      # Deploy the static site to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./out  # The directory where "next export" outputs the static site
