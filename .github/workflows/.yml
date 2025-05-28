@@ -20,16 +20,29 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4.0.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Use your desired Node.js version
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build static site
+        run: npm run build
+
       - name: Copy Static Files
         run: |
           if [ ! -d "dist" ]; then
-            echo "Error: Directory 'dist' does not exist. Please update the path to your static site files."
+            echo "Error: Directory 'dist' does not exist after build. Please check your build configuration."
             exit 1
           fi
           mkdir -p _site
-          cp -r ./dist/* ./_site/  # Replace "dist" with your actual output directory
+          cp -r ./dist/* ./_site/
+
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3.0.1
         with:
