@@ -2,6 +2,8 @@ name: Deploy Static Site to GitHub Pages
 
 on:
   push:
+    branches: ["main"]
+  pull_request:
     branches: ["main"] 
   workflow_dispatch:
 
