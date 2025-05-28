@@ -4,7 +4,7 @@ on:
   push:
     branches: ["main"]
   pull_request:
-    branches: ["main"] 
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
@@ -22,22 +22,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.0.0
-
       - name: Copy Static Files
         run: |
-          if [ ! -d "public" ]; then
-            echo "Error: Directory 'public' does not exist. Please update the path to your static site files."
+          if [ ! -d "dist" ]; then
+            echo "Error: Directory 'dist' does not exist. Please update the path to your static site files."
             exit 1
           fi
           mkdir -p _site
-          cp -r ./public/* ./_site/  # Replace "public" with your actual output directory (e.g., dist, _site)
-
+          cp -r ./dist/* ./_site/  # Replace "dist" with your actual output directory
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3.0.1
         with:
           path: ./_site
 
   deploy:
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
